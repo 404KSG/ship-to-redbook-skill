@@ -147,9 +147,9 @@ python scripts/chrome_launcher.py --restart
 python scripts/chrome_launcher.py --kill
 ```
 
-## 与 Claude Code 集成
+## 支持各种 Skill 工具
 
-本项目可作为 Claude Code 的 Skill 使用。将项目复制到 `.claude/skills/post-to-xhs/` 目录，并添加 `SKILL.md` 文件即可。
+本项目可作为 Claude Code、OpenCode 等支持 Skill 的工具使用，只需将项目复制到 `.claude/skills/post-to-xhs/` 目录，并添加 `SKILL.md` 文件即可。
 
 详见 [docs/claude-code-integration.md](docs/claude-code-integration.md)
 
