@@ -79,6 +79,8 @@ SELECTORS = {
     "content_editor_alt": 'div.ProseMirror[contenteditable="true"]',
     # Publish button
     "publish_button_text": "发布",
+    # Save draft button
+    "save_draft_button_text": "暂存离开",
     # Login indicator - URL-based check (redirect to /login if not logged in)
     "login_indicator": '.user-info, .creator-header, [class*="user"]',
 }
@@ -449,6 +451,50 @@ class XiaohongshuPublisher:
                 "Please click it manually in the browser."
             )
 
+    def _click_save_draft(self):
+        """Click the save draft button (found by text content)."""
+        print("[cdp_publish] Clicking save draft button...")
+        time.sleep(ACTION_INTERVAL)
+
+        # Try multiple possible button texts
+        possible_texts = ["暂存离开", "存草稿", "保存草稿", "暂存", "存为草稿", "保存为草稿"]
+
+        for btn_text in possible_texts:
+            clicked = self._evaluate(f"""
+                (function() {{
+                    // Strategy 1: search <button> elements by text
+                    var buttons = document.querySelectorAll('button');
+                    for (var i = 0; i < buttons.length; i++) {{
+                        var t = buttons[i].textContent.trim();
+                        if (t === '{btn_text}') {{
+                            buttons[i].click();
+                            return true;
+                        }}
+                    }}
+                    // Strategy 2: search d-button-content / d-text spans
+                    var spans = document.querySelectorAll('.d-button-content .d-text, .d-button-content span');
+                    for (var i = 0; i < spans.length; i++) {{
+                        if (spans[i].textContent.trim() === '{btn_text}') {{
+                            var el = spans[i].closest('button, [role="button"], .d-button, [class*="btn"], [class*="button"]');
+                            if (!el) el = spans[i].closest('.d-button-content');
+                            if (!el) el = spans[i];
+                            el.click();
+                            return true;
+                        }}
+                    }}
+                    return false;
+                }})();
+            """)
+
+            if clicked:
+                print(f"[cdp_publish] Save draft button clicked (text: {btn_text}).")
+                return
+
+        raise CDPError(
+            "Could not find save draft button. "
+            "Please click it manually in the browser."
+        )
+
     # ------------------------------------------------------------------
     # Main publish workflow
     # ------------------------------------------------------------------
@@ -531,6 +577,13 @@ def main():
     p_pub.add_argument("--content", default=None)
     p_pub.add_argument("--content-file", default=None, help="Read content from file")
     p_pub.add_argument("--images", nargs="+", required=True)
+
+    # save-draft - fill form and save as draft
+    p_draft = sub.add_parser("save-draft", help="Fill form and save as draft")
+    p_draft.add_argument("--title", required=True)
+    p_draft.add_argument("--content", default=None)
+    p_draft.add_argument("--content-file", default=None, help="Read content from file")
+    p_draft.add_argument("--images", nargs="+", required=True)
 
     # click-publish - just click the publish button on current page
     sub.add_parser("click-publish", help="Click publish button on already-filled page")
@@ -631,7 +684,7 @@ def main():
                 )
             sys.exit(0 if logged_in else 1)
 
-        elif args.command in ("fill", "publish"):
+        elif args.command in ("fill", "publish", "save-draft"):
             content = args.content
             if args.content_file:
                 with open(args.content_file, encoding="utf-8") as f:
@@ -647,6 +700,9 @@ def main():
             if args.command == "publish":
                 publisher._click_publish()
                 print("PUBLISH_STATUS: PUBLISHED")
+            elif args.command == "save-draft":
+                publisher._click_save_draft()
+                print("DRAFT_STATUS: SAVED")
 
         elif args.command == "click-publish":
             publisher.connect(target_url_prefix="https://creator.xiaohongshu.com/publish")

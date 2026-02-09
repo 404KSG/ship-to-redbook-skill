@@ -1,4 +1,4 @@
-# Post-to-xhs
+# Ship2RedBook
 
 自动发布内容到小红书（Xiaohongshu/RED）的命令行工具。
 
@@ -7,10 +7,12 @@
 ## 功能特性
 - **网页内容提取**：支持通过输入 URL 提取标题、内容和图片（如有）
 - **自动化发布**：自动填写标题、正文、上传图片
+- **草稿保存**：支持保存为草稿，稍后再发布
 - **多账号支持**：支持管理多个小红书账号，各账号 Cookie 隔离
 - **无头模式**：支持后台运行，无需显示浏览器窗口
 - **图片下载**：支持从 URL 自动下载图片，自动添加 Referer 绕过防盗链
 - **登录检测**：自动检测登录状态，未登录时自动切换到有窗口模式扫码
+- **跨平台支持**：支持 Windows、macOS 和 Linux
 
 ## 安装
 
@@ -18,7 +20,7 @@
 
 - Python 3.10+
 - Google Chrome 浏览器
-- Windows 操作系统（目前仅测试 Windows）
+- 支持 Windows、macOS 和 Linux 操作系统
 
 ### 安装依赖
 
@@ -106,6 +108,7 @@ python scripts/publish_pipeline.py [选项]
   --headless             无头模式（无浏览器窗口）
   --account NAME         指定账号
   --auto-publish         自动点击发布（跳过确认）
+  --save-draft           保存为草稿
 ```
 
 ### cdp_publish.py
@@ -149,7 +152,7 @@ python scripts/chrome_launcher.py --kill
 
 ## 支持各种 Skill 工具
 
-本项目可作为 Claude Code、OpenCode 等支持 Skill 的工具使用，只需将项目复制到 `.claude/skills/post-to-xhs/` 目录，并添加 `SKILL.md` 文件即可。
+本项目可作为 Claude Code、OpenCode 等支持 Skill 的工具使用，只需将项目复制到 `.claude/skills/ship2redbook/` 目录，并添加 `SKILL.md` 文件即可。
 
 详见 [docs/claude-code-integration.md](docs/claude-code-integration.md)
 

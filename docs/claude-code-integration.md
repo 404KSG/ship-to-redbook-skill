@@ -7,12 +7,12 @@
 将项目复制到 Claude Code 的 skills 目录：
 
 ```bash
-cp -r Post-to-xhs ~/.claude/skills/post-to-xhs
+cp -r ship2redbook ~/.claude/skills/ship2redbook
 ```
 
 ## 创建 SKILL.md
 
-在 `~/.claude/skills/post-to-xhs/` 目录下创建 `SKILL.md` 文件：
+在 `~/.claude/skills/ship2redbook/` 目录下创建 `SKILL.md` 文件：
 
 ```markdown
 # 小红书内容发布

@@ -75,11 +75,18 @@ def main():
     )
 
     # Publish mode
-    parser.add_argument(
+    publish_group = parser.add_mutually_exclusive_group()
+    publish_group.add_argument(
         "--auto-publish",
         action="store_true",
         default=False,
         help="Click publish button after filling (default: fill only)",
+    )
+    publish_group.add_argument(
+        "--save-draft",
+        action="store_true",
+        default=False,
+        help="Save as draft after filling",
     )
 
     # Headless mode
@@ -189,7 +196,7 @@ def main():
             downloader.cleanup()
         sys.exit(2)
 
-    # --- Step 5: Publish (optional) ---
+    # --- Step 5: Publish or Save Draft (optional) ---
     if args.auto_publish:
         print("[pipeline] Step 5: Clicking publish button...")
         try:
@@ -197,6 +204,16 @@ def main():
             print("PUBLISH_STATUS: PUBLISHED")
         except CDPError as e:
             print(f"Error clicking publish: {e}", file=sys.stderr)
+            if downloader:
+                downloader.cleanup()
+            sys.exit(2)
+    elif args.save_draft:
+        print("[pipeline] Step 5: Saving as draft...")
+        try:
+            publisher._click_save_draft()
+            print("DRAFT_STATUS: SAVED")
+        except CDPError as e:
+            print(f"Error saving draft: {e}", file=sys.stderr)
             if downloader:
                 downloader.cleanup()
             sys.exit(2)

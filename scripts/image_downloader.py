@@ -59,11 +59,26 @@ class ImageDownloader:
         Download a single image and return the local file path.
 
         Args:
-            url: Image URL to download
+            url: Image URL to download, or local file path
             referer: Optional Referer header. If None, auto-generates from URL domain.
 
         Raises requests.RequestException on network errors.
         """
+        # Check if it's a local file path
+        if os.path.isfile(url):
+            # It's a local file, copy it to temp directory
+            _, ext = os.path.splitext(url)
+            if not ext:
+                ext = ".jpg"
+            filename = f"{uuid.uuid4().hex[:12]}{ext}"
+            filepath = os.path.join(self.temp_dir, filename)
+            shutil.copy2(url, filepath)
+            self.downloaded_files.append(filepath)
+            print(f"[image_downloader] Copied local file: {url}")
+            print(f"  -> {filepath} ({os.path.getsize(filepath)} bytes)")
+            return filepath
+
+        # It's a URL, download it
         # Build headers with Referer to bypass hotlink protection
         parsed = urlparse(url)
         if referer is None:

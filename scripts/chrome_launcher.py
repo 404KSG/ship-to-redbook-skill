@@ -30,14 +30,27 @@ _current_account: Optional[str] = None
 
 
 def get_chrome_path() -> str:
-    """Find Chrome executable on Windows."""
+    """Find Chrome executable on Windows, macOS, and Linux."""
     candidates = []
 
-    # Standard install locations
-    for env_var in ("PROGRAMFILES", "PROGRAMFILES(X86)", "LOCALAPPDATA"):
-        base = os.environ.get(env_var, "")
-        if base:
-            candidates.append(os.path.join(base, "Google", "Chrome", "Application", "chrome.exe"))
+    system = platform.system()
+
+    if system == "Darwin":  # macOS
+        candidates.append("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
+        candidates.append(os.path.expanduser("~/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"))
+    elif system == "Linux":
+        candidates.extend([
+            "/usr/bin/google-chrome",
+            "/usr/bin/google-chrome-stable",
+            "/usr/bin/chromium",
+            "/usr/bin/chromium-browser",
+        ])
+    elif system == "Windows":
+        # Standard install locations on Windows
+        for env_var in ("PROGRAMFILES", "PROGRAMFILES(X86)", "LOCALAPPDATA"):
+            base = os.environ.get(env_var, "")
+            if base:
+                candidates.append(os.path.join(base, "Google", "Chrome", "Application", "chrome.exe"))
 
     for path in candidates:
         if os.path.isfile(path):
@@ -45,7 +58,7 @@ def get_chrome_path() -> str:
 
     # Fallback: check PATH
     import shutil
-    found = shutil.which("chrome") or shutil.which("chrome.exe")
+    found = shutil.which("chrome") or shutil.which("chrome.exe") or shutil.which("google-chrome")
     if found:
         return found
 
@@ -69,10 +82,15 @@ def get_user_data_dir(account: Optional[str] = None) -> str:
         return get_profile_dir(account)
     except ImportError:
         # Fallback if account_manager not available
-        local_app_data = os.environ.get("LOCALAPPDATA", "")
-        if not local_app_data:
-            local_app_data = os.path.expanduser("~")
-        return os.path.join(local_app_data, "Google", "Chrome", PROFILE_DIR_NAME)
+        system = platform.system()
+        if system == "Darwin":  # macOS
+            base_dir = os.path.expanduser("~/Library/Application Support")
+        elif system == "Windows":
+            base_dir = os.environ.get("LOCALAPPDATA", os.path.expanduser("~"))
+        else:  # Linux
+            base_dir = os.path.expanduser("~/.config")
+
+        return os.path.join(base_dir, "Google", "Chrome", PROFILE_DIR_NAME)
 
 
 def is_port_open(port: int, host: str = "127.0.0.1") -> bool:
