@@ -152,7 +152,7 @@ python scripts/chrome_launcher.py --kill
 
 ## 支持各种 Skill 工具
 
-本项目可作为 Claude Code、OpenCode 等支持 Skill 的工具使用，只需将项目复制到 `.claude/skills/redbook-publisher-skill/` 目录，并添加 `SKILL.md` 文件即可。
+本项目可作为 Claude Code、OpenCode 等支持 Skill 的工具使用，只需将项目复制到 `.claude/skills/ship-to-redbook/` 目录，并添加 `SKILL.md` 文件即可。
 
 详见 [docs/claude-code-integration.md](docs/claude-code-integration.md)
 
