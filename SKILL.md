@@ -1,4 +1,11 @@
+---
+name: ship-to-redbook-skill
+description: 小红书（Xiaohongshu/Little Red Book/Redbook）发布主入口。自动发布内容到小红书，支持自动判断发布方式、图片处理、标题规则校验、无头模式和有窗口模式。替代 `xiaohongshu-publisher` 和 `social-post` 的小红书发布路径；只有旧命令显式调用时才使用那些兼容 skill。
+---
+
 # 小红书内容发布
+
+这是当前小红书发布的 canonical skill。`xiaohongshu-publisher` 和 `social-post xiaohongshu` 仅作为旧入口/底层兼容，不参与新任务路由。
 
 根据用户输入自动判断发布方式，简化发布流程。
 
